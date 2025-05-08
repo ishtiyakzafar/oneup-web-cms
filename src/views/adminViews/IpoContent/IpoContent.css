@@ -1,0 +1,21 @@
+.ipoContent {
+  padding: 20px;
+  min-height: 100vh;
+}
+.ipoContent .ipo_card {
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 10px -4px rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
+}
+.ipoContent .ipo_card h6 {
+  font-size: 1em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.ipoContent .ipo_card label {
+  font-size: 0.8571em;
+  margin-bottom: 5px;
+  color: #9a9a9a;
+}
+

@@ -10,8 +10,7 @@ import Swal from 'sweetalert2';
 import { createIssue, deleteIssue, getIssueById, updateIssue } from "../../../services/issuesServices"
 import { CKEditor } from "ckeditor4-react"
 import {toBase64 as toBase64 } from 'views/adminViews/Issues/helper/base64';
-import { checkImageExt } from 'views/adminViews/Issues/helper/checkImageExt';
-import { pdfValidation } from 'views/adminViews/Issues/helper/pdfValidation';
+
 
 
 const required = (val) => val && val.length;
@@ -40,7 +39,6 @@ const IssuesDetailPage = (props) => {
     const [deleteOtimage, setdeleteOtimage] = useState(0)
     const [deleteBanner, setdeleteBanner] = useState(0)
     const [reportFile, setReportFile] = useState('');
-    const [deleteLogo, setdeleteLogo] = useState(false);
     const [deleteReportFile, setDeleteReportFile] = useState(false);
     const [deleteApplyFile, setDeleteApplyFile] = useState(false);
     const [deleteConsImage, setDeleteConsImage] = useState(false);
@@ -68,36 +66,7 @@ const IssuesDetailPage = (props) => {
         }
         // =============== to delete the properties
 
-       
-       
-        if(upcomingIssue == 0)
-        {
-            
-            if(!data.expiry_date)
-            {
-                Swal.fire({
-                    title: "Expiry date is required",
-                    text: "Please provide a valid expiry date",
-                    icon: "error",
-                    showCancelButton: false,
-                    confirmButtonText: "Okay",
-                    cancelButtonText: "Cancel, keep it"
-                })
-                return false;
-            }
 
-            if (new Date(new Date(data.expiry_date)).getTime() <= new Date(new Date()).getTime()) {
-                Swal.fire({
-                    title: "Expiry date is not valid",
-                    text: "Please provide a valid expiry date",
-                    icon: "error",
-                    showCancelButton: false,
-                    confirmButtonText: "Okay",
-                    cancelButtonText: "Cancel, keep it"
-                })
-                return false;
-            }
-        }
 
         const body = {
             co_code: values?.co_code.replace(/(<([^>]+)>)/ig, ''),
@@ -141,12 +110,11 @@ const IssuesDetailPage = (props) => {
             deleteApplifrom: deleteApplifrom,
             deleteOtimage: deleteOtimage,
             deleteBanner: deleteBanner,
-            logo: deleteLogo? null : issueData.logo,
+            logo: issueData.logo,
             report_file: deleteReportFile ? null : issueData.report_file,
             apply_file: deleteApplyFile ? null : issueData.apply_file,
             consideration_image: deleteConsImage ? null : issueData.consideration_image,
             bannerfile: deleteBannerImage ? null : issueData.bannerfile,
-            upcoming_issue:upcomingIssue,
         };
 
 
@@ -157,8 +125,16 @@ const IssuesDetailPage = (props) => {
         if (values?.logo && values?.logo?.length > 0) {
             fileArray = values.logo[0].name.split(".");
             ext = fileArray[fileArray.length - 1];
-            checkImageExt(ext);
-            
+            switch (ext) {
+                case 'jpg':
+                case 'bmp':
+                case 'png':
+                case 'tif':
+                    break;
+                default:
+                    alert('Logo File Type Not allowed');
+                    return;
+            }
             const logoImage = await toBase64(values.logo[0]);
             body.logo = {
                 file: logoImage.split(',')[1],
@@ -169,8 +145,14 @@ const IssuesDetailPage = (props) => {
         if (values?.report_file && values?.report_file?.length > 0) {
             fileArray = values.report_file[0].name.split(".");
             ext = fileArray[fileArray.length - 1];
-            pdfValidation(ext, 'Report File Type Not allowed');
-            
+            ext = ext.toLowerCase();
+            switch (ext) {
+                case 'pdf':
+                    break;
+                default:
+                    alert('Report File Type Not allowed');
+                    return;
+            }
             const reportFile = await toBase64(values.report_file[0]);
             if (updateReportFile) {
                 body.report_file = {
@@ -185,8 +167,14 @@ const IssuesDetailPage = (props) => {
         if (values?.apply_file && values?.apply_file?.length > 0) {
             fileArray = values.apply_file[0].name.split(".");
             ext = fileArray[fileArray.length - 1];
-            pdfValidation(ext, 'Apply File Type Not allowed');
-           
+            ext = ext.toLowerCase();
+            switch (ext) {
+                case 'pdf':
+                    break;
+                default:
+                    alert('Application File Type Not allowed');
+                    return;
+            }
             const applyFile = await toBase64(values.apply_file[0]);
             if (updateApplyFile) {
                 body.apply_file = {
@@ -199,8 +187,16 @@ const IssuesDetailPage = (props) => {
         if (values?.consideration_image && values?.consideration_image?.length > 0) {
             fileArray = values.consideration_image[0].name.split(".");
             ext = fileArray[fileArray.length - 1];
-            checkImageExt(ext);
-           
+            switch (ext) {
+                case 'jpg':
+                case 'bmp':
+                case 'png':
+                case 'tif':
+                    break;
+                default:
+                    alert('Consideration Image Type Not allowed');
+                    return;
+            }
             const considerationImage = await toBase64(values.consideration_image[0]);
             if (updateConsImage) {
                 body.consideration_image = {
@@ -213,8 +209,16 @@ const IssuesDetailPage = (props) => {
         if (values?.bannerfile && values?.bannerfile?.length > 0) {
             fileArray = values.bannerfile[0].name.split(".");
             ext = fileArray[fileArray.length - 1];
-            checkImageExt(ext);
-            
+            switch (ext) {
+                case 'jpg':
+                case 'bmp':
+                case 'png':
+                case 'tif':
+                    break;
+                default:
+                    alert('Consideration Image Type Not allowed');
+                    return;
+            }
             const bannerFile = await toBase64(values.bannerfile[0]);
             if (updateBannerImage) {
                 body.bannerfile = {
@@ -245,7 +249,6 @@ const IssuesDetailPage = (props) => {
                     if (response.data.statusCode === 200) {
                         ShowNotification("Success!", "Issue Creation Successful!", "success")
                         setIssueData(response.data.result);
-                        setdeleteLogo(false);
                         setDeleteReportFile(false);
                         setUpdateReportFile(false);
 
@@ -421,25 +424,10 @@ const IssuesDetailPage = (props) => {
                                         </Col>
 
                                         <Col md={4}>
-                                            <Label >Logo</Label>
-                                            {issueData.logo &&
-                                                <>
-                                                    {!deleteLogo ?
-                                                        <>
-                                                            <a className="small font-weight-bold" href={`${issueData?.logo}`} target="_blank">View File</a>
-                                                            <button href='javascript:void(0)' className="small font-weight-bold btn-xs btn-danger pull-right" onClick={() => setdeleteLogo(true)}
-                                                            >Remove </button>
-                                                        </>
-                                                        :
-                                                        <>
-                                                            <button className="small font-weight-bold btn-xs btn-success pull-right" onClick={() => setdeleteLogo(false)}>Undo Delete</button>
-                                                        </>
-                                                    }
-                                                </>
-                                            }                                             
+                                            <Label >Logo</Label> {issueData?.logo && <a className="small font-weight-bold" href={`${issueData?.logo}`} target="_blank">View Logo</a>}
                                             <Control.file model=".logo" id="logo" name="logo"
                                                 placeholder="Choose File"
-                                                accept="image/*"
+                                                accept=".png, .jpg, .jpeg"
                                                 className="form-control"
                                                 onChange={(e) => filesizecheck(e)}
                                             // required
@@ -459,10 +447,6 @@ const IssuesDetailPage = (props) => {
                                                 <option value={"IPO"}>IPO</option>
                                                 <option value={"SGB"}>SGB</option>
                                                 <option value={"NCD"}>NCD</option>
-                                                <option value={"NCD"}>NCD</option>
-                                                <option value={"G-sec"}>GS</option>
-                                                <option value={"T-bill"}>TB</option>
-                                                <option value={"SDL"}>SD</option>
                                             </Control.select>
 
                                         </Col>
@@ -482,15 +466,15 @@ const IssuesDetailPage = (props) => {
                                         </Col>
                                         <Col md={4}>
                                             <Label >{upcomingIssue == 1 ? 'Upcoming Date' : 'Expiry Date'}</Label>
-                                               
+
                                             {/* {new Date(issueData?.expiry_date).toISOString().substr(0,19)} */}
                                             <Control.text model=".expiry_date" id="expiry_date" name="expiry_date"
                                                 type="datetime-local"
                                                 className="form-control"
                                                 defaultValue={issueData?.expiry_date ? new Date(new Date(issueData?.expiry_date).toString().split('GMT')[0] + ' UTC').toISOString().split('.')[0] : null}
-                                                // validators={{
-                                                //     validateDate
-                                                // }}
+                                                validators={{
+                                                    validateDate
+                                                }}
                                             />
                                             <Errors
                                                 className="text-danger small"
@@ -886,7 +870,7 @@ const IssuesDetailPage = (props) => {
                                             <Control.file model=".consideration_image" id="consideration_image" name="consideration_image"
                                                 placeholder="Consideration Image"
                                                 className="form-control"
-                                                accept="image/*"
+                                                accept=".png, .jpg, .jpeg"
                                                 onChange={(e) => {
                                                     filesizecheck(e)
                                                     setdeleteOtimage(0)
@@ -914,7 +898,7 @@ const IssuesDetailPage = (props) => {
                                             <Control.file model=".bannerfile" id="bannerfile" name="bannerfile"
                                                 placeholder="Banner Image"
                                                 className="form-control"
-                                                accept="image/*"
+                                                accept=".png, .jpg, .jpeg"
                                                 onChange={(e) => {
                                                     filesizecheck(e)
                                                     setdeleteBanner(0)
@@ -998,10 +982,7 @@ const IssuesDetailPage = (props) => {
                                                 <option value={'fire'}>On fire!</option>
                                                 <option value={'percentage'}>Tax benefits</option>
                                                 <option value={'rupees'}>Fixed Returns</option>
-                                                <option value={'discount'}>On Discount</option>                                                
-                                                <option value={'highreturn'}>Highest return</option>
-                                                <option value={'lowtenure'}>Lowest tenure</option>
-                                                <option value={'taxfree'}>Tax free</option>
+                                                <option value={'discount'}>On Discount</option>
                                             </Control.select>
 
                                         </Col>

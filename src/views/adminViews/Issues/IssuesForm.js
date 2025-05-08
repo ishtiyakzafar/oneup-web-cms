@@ -6,8 +6,8 @@ import { createIssue } from "../../../services/issuesServices"
 import { CKEditor } from "ckeditor4-react"
 import Swal from 'sweetalert2';
 import {toBase64 as toBase64 } from 'views/adminViews/Issues/helper/base64';
-import { checkImageExt } from 'views/adminViews/Issues/helper/checkImageExt';
-import { pdfValidation } from 'views/adminViews/Issues/helper/pdfValidation';
+
+
 const required = (val) => val && val.length;
 const lengthSmall = (val) => {
     if (val)
@@ -25,20 +25,14 @@ const lengthBig = (val) => {
             return false;
     return true;
 }
-// const validateDate = (val) => {
-//     console.log(val)
-//     // new Date(new Date(val).setHours("00", "00" ,"00" ,"00")).getTime() >= new Date(new Date().setHours("00", "00" ,"00" ,"00")).getTime()
-//     if (new Date(new Date(val)).getTime() <= new Date(new Date()).getTime()) {
-//         return false
-//     }
-//     else {
-//         return true
-//     }
-// }
-
-const NovalidateDate = (val) => {
-    console.log(val+'==');
-    return true
+const validateDate = (val) => {
+    // new Date(new Date(val).setHours("00", "00" ,"00" ,"00")).getTime() >= new Date(new Date().setHours("00", "00" ,"00" ,"00")).getTime()
+    if (new Date(new Date(val)).getTime() <= new Date(new Date()).getTime()) {
+        return false
+    }
+    else {
+        return true
+    }
 }
 
 const IssuesForm = () => {
@@ -81,33 +75,6 @@ const IssuesForm = () => {
         }
         // =============== to delete the properties
 
-        if(upcomingIssue === 0)
-        {
-            if(!data.expiry_date)
-            {
-                Swal.fire({
-                    title: "Expiry date is required",
-                    text: "Please provide a valid expiry date",
-                    icon: "error",
-                    showCancelButton: false,
-                    confirmButtonText: "Okay",
-                    cancelButtonText: "Cancel, keep it"
-                })
-                return false;
-            }
-
-            if (new Date(new Date(data.expiry_date)).getTime() <= new Date(new Date()).getTime()) {
-                Swal.fire({
-                    title: "Expiry date is not valid",
-                    text: "Please provide a valid expiry date",
-                    icon: "error",
-                    showCancelButton: false,
-                    confirmButtonText: "Okay",
-                    cancelButtonText: "Cancel, keep it"
-                })
-                return false;
-            }
-        }
 
 
         const body = {
@@ -158,8 +125,16 @@ const IssuesForm = () => {
         if (values?.logo && values?.logo?.length > 0) {
             fileArray = values.logo[0].name.split(".");
             ext = fileArray[fileArray.length - 1];
-            checkImageExt(ext);
-            
+            switch (ext) {
+                case 'jpg':
+                case 'bmp':
+                case 'png':
+                case 'tif':
+                    break;
+                default:
+                    alert('Logo File Type Not allowed');
+                    return;
+            }
             const logoImage = await toBase64(values.logo[0]);
             console.log(values.logo[0])
             body.logo = {
@@ -172,7 +147,13 @@ const IssuesForm = () => {
         if (values?.report_file && values?.report_file?.length > 0) {
             fileArray = values.report_file[0].name.split(".");
             ext = fileArray[fileArray.length - 1];
-            pdfValidation(ext, 'Report File Type Not allowed');
+            switch (ext) {
+                case 'pdf':
+                    break;
+                default:
+                    alert('Report File Type Not allowed');
+                    return;
+            }
             const reportFile = await toBase64(values.report_file[0]);
             body.report_file = {
                 file: reportFile.split(',')[1],
@@ -185,8 +166,13 @@ const IssuesForm = () => {
         if (values?.apply_file && values?.apply_file?.length > 0) {
             fileArray = values.apply_file[0].name.split(".");
             ext = fileArray[fileArray.length - 1];
-            pdfValidation(ext, 'Apply File Type Not allowed');
-           
+            switch (ext) {
+                case 'pdf':
+                    break;
+                default:
+                    alert('Report File Type Not allowed');
+                    return;
+            }
             const applyFile = await toBase64(values.apply_file[0]);
             body.apply_file = {
                 file: applyFile.split(',')[1],
@@ -199,8 +185,16 @@ const IssuesForm = () => {
         if (values?.consideration_image && values?.consideration_image?.length > 0) {
             fileArray = values.consideration_image[0].name.split(".");
             ext = fileArray[fileArray.length - 1];
-            checkImageExt(ext);
-            
+            switch (ext) {
+                case 'jpg':
+                case 'bmp':
+                case 'png':
+                case 'tif':
+                    break;
+                default:
+                    alert('Consideration Image Type Not allowed');
+                    return;
+            }
             const considerationImage = await toBase64(values.consideration_image[0]);
             body.consideration_image = {
                 file: considerationImage.split(',')[1],
@@ -212,8 +206,16 @@ const IssuesForm = () => {
         if (values?.bannerfile && values?.bannerfile?.length > 0) {
             fileArray = values.bannerfile[0].name.split(".");
             ext = fileArray[fileArray.length - 1];
-            checkImageExt(ext);
-            
+            switch (ext) {
+                case 'jpg':
+                case 'bmp':
+                case 'png':
+                case 'tif':
+                    break;
+                default:
+                    alert('Banner Image Type Not allowed');
+                    return;
+            }
             const bannerFile = await toBase64(values.bannerfile[0]);
             body.bannerfile = {
                 file: bannerFile.split(',')[1],
@@ -315,7 +317,7 @@ const IssuesForm = () => {
                                             placeholder="Issue Code"
                                             className="form-control"
                                             validators={{
-                                                lengthSmall,required
+                                                lengthSmall
                                             }}
                                         />
                                         <Errors
@@ -323,8 +325,7 @@ const IssuesForm = () => {
                                             model=".issuecode"
                                             show="touched"
                                             messages={{
-                                                lengthSmall: "Field Length should be less than 30",
-                                                required: "This Field is Required",
+                                                lengthSmall: "Field Length should be less than 30"
                                             }}
                                         />
                                     </Col>
@@ -334,7 +335,7 @@ const IssuesForm = () => {
                                         <Label >Logo</Label>
                                         <Control.file model=".logo" id="logo" name="logo"
                                             placeholder="Choose File"
-                                            accept="image/*"
+                                            accept=".png, .jpg, .jpeg"
                                             className="form-control"
                                             onChange={(e) => filesizecheck(e)}
                                         />
@@ -352,14 +353,9 @@ const IssuesForm = () => {
                                             <option value={"IPO"}>IPO</option>
                                             <option value={"SGB"}>SGB</option>
                                             <option value={"NCD"}>NCD</option>
-                                            <option value={"G-sec"}>GS</option>
-                                            <option value={"T-bill"}>TB</option>
-                                            <option value={"SDL"}>SD</option>
                                         </Control.select>
 
                                     </Col>
-
-                                     
 
                                     <Col md={4}>
                                         <Label >Upcoming Issue</Label>
@@ -382,19 +378,8 @@ const IssuesForm = () => {
                                         <Control.text model=".expiry_date" id="expiry_date" name="expiry_date"
                                             type="datetime-local"
                                             className="form-control"
-                                            validators={upcomingIssue != 1 ? {
-                                                validateDate:(val) => {
-                                                    if (new Date(new Date(val)).getTime() <= new Date(new Date()).getTime()) {
-                                                        return false
-                                                    }
-                                                    else {
-                                                        return true
-                                                    }
-                                                },
-                                            }:{
-                                                validateDate:(val) => {
-                                                    return true
-                                                },
+                                            validators={{
+                                                validateDate
                                             }}
                                         />
                                         <Errors
@@ -403,18 +388,9 @@ const IssuesForm = () => {
                                             show="touched"
                                             messages={{
                                                 validateDate: "Please select a valid date",
-                                                required: "Please select a date",
                                             }}
-                                        />                                       
-
-                                    </Col>
-
-                                    <Col md={4}>
-                                        <Label >Landing Page Badge</Label>
-                                        <Control.text model=".landing_page_badge" id="landing_page_badge" name="landing_page_badge"
-                                            placeholder="Landing Page Badge"
-                                            className="form-control"                                           
                                         />
+
                                     </Col>
 
 
@@ -859,7 +835,7 @@ const IssuesForm = () => {
                                         <Control.file model=".consideration_image" id="consideration_image" name="consideration_image"
                                             placeholder="Consideration Image"
                                             className="form-control"
-                                            accept="image/*"
+                                            accept=".png, .jpg, .jpeg"
                                             onChange={(e) => filesizecheck(e)}
                                         />
                                     </Col>
@@ -868,7 +844,7 @@ const IssuesForm = () => {
                                         <Control.file model=".bannerfile" id="bannerfile" name="bannerfile"
                                             placeholder="Banner Image"
                                             className="form-control"
-                                            accept="image/*"
+                                            accept=".png, .jpg, .jpeg"
                                             onChange={(e) => filesizecheck(e)}
                                         />
                                     </Col>
@@ -981,9 +957,6 @@ const IssuesForm = () => {
                                             <option value={'percentage'}>Tax benefits</option>
                                             <option value={'rupees'}>Fixed Returns</option>
                                             <option value={'discount'}>On Discount</option>
-                                            <option value={'highreturn'}>Highest return</option>
-                                            <option value={'lowtenure'}>Lowest tenure</option>
-                                            <option value={'taxfree'}>Tax free</option>
                                         </Control.select>
 
                                     </Col>

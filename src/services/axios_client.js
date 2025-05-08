@@ -31,7 +31,7 @@ const tokenConfig = (config) => {
 }
 
 apiServices.interceptors.request.use(tokenConfig, (e) => {
-    // console.log(e);
+    console.log(e);
     Promise.reject(e)
 })
 

@@ -5,8 +5,8 @@ import IssuesTable from './views/adminViews/Issues/IssuesTable.js'
 import BannerTable from './views/adminViews/BannerTable.js'
 import BannerForm from './views/adminViews/BannerForm.js'
 import IssuesDetailPage from './views/adminViews/Issues/IssuesDetailPage.js'
-import Gsec from 'views/adminViews/Gsec/Gsec.js'
-import CreateGsec from 'views/adminViews/Gsec/CreateGsec.js'
+import AddUpdateIpoContent from './views/adminViews/AddUpdateIpoContent/AddUpdateIpoContent.js'
+import IpoContent from './views/adminViews/IpoContent/IpoContent.js'
 
 export var routes = [
 
@@ -38,27 +38,46 @@ export var routes = [
     component: IssuesDetailPage,
     layout: "/admin",
   },
+  // {
+  //   path: "/banners",
+  //   name: "Banners",
+  //   icon: "nc-icon nc-album-2",
+  //   component: BannerTable,
+  //   layout: "/admin",
+  // },  
+  // {
+  //   path: "/banner-create",
+  //   name: "Create Banners",
+  //   icon: "nc-icon nc-simple-add",
+  //   component: BannerForm,
+  //   layout: "/admin",
+  // },
   {
-    path: "/create-gsec",
-    name: "Create G-Secs",
+    path: "/ipo-content/create",
+    name: "Add IPO Content",
     icon: "nc-icon nc-simple-add",
-    component: CreateGsec,
+    component: AddUpdateIpoContent,
     layout: "/admin",
   },
   {
-    path: "/gsec",
-    name: "G-Secs",
-    icon: "nc-icon nc-bank",
-    component: Gsec,
+    path: "/ipo-content/:id",
+    name: "IPO Content Detail",
+    icon: "nc-icon nc-simple-add",
+    component: AddUpdateIpoContent,
     layout: "/admin",
   },
-
-
+  {
+    path: "/ipo-content-list",
+    name: "IPO Content List",
+    icon: "nc-icon nc-bank",
+    component: IpoContent,
+    layout: "/admin",
+  },
 
 ]
 
 export var sidebarRoutes = [
-
+  
   {
     path: "/dashboard",
     name: "Dashboard",
@@ -80,20 +99,32 @@ export var sidebarRoutes = [
     component: IssuesTable,
     layout: "/admin",
   },
+  // {
+  //   path: "/banners",
+  //   name: "Banners",
+  //   icon: "nc-icon nc-album-2",
+  //   component: BannerTable,
+  //   layout: "/admin",
+  // },  
+  // {
+  //   path: "/banner-create",
+  //   name: "Create Banners",
+  //   icon: "nc-icon nc-simple-add",
+  //   component: BannerForm,
+  //   layout: "/admin",
+  // },
   {
-    path: "/create-gsec",
-    name: "Create G-Secs",
+    path: "/ipo-content/create",
+    name: "Add IPO Content",
     icon: "nc-icon nc-simple-add",
-    component: CreateGsec,
+    component: AddUpdateIpoContent,
     layout: "/admin",
   },
   {
-    path: "/gsec",
-    name: "G-Secs",
+    path: "/ipo-content-list",
+    name: "IPO Content List",
     icon: "nc-icon nc-bank",
-    component: Gsec,
+    component: IpoContent,
     layout: "/admin",
   },
-
-
 ]
